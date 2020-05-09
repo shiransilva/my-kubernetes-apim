@@ -40,8 +40,8 @@ while [ "$1" != "" ]; do
     shift
 done
 echoBold 'Deleting NGINX Ingress Controller...'
-${KUBECTL} delete --username=admin --password=${ADMIN_PASSWORD} -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
-${KUBECTL} delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/cloud-generic.yaml
+${KUBECTL} delete --username=admin --password=${ADMIN_PASSWORD} -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.22.0/deploy/mandatory.yaml
+${KUBECTL} delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.22.0/deploy/provider/cloud-generic.yaml
 
 sleep 10s
 echoBold 'Finished'
