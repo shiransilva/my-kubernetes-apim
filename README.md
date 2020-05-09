@@ -1,16 +1,5 @@
-# Kubernetes Demo
+# my-kubernetes-apim
 *This documentation is to deploy* 
-
-*1. WSO2 API Manager deployment pattern 1 in gcloud Kubernetes Engine and automating a sample backend service.*
-
-*2.Zero downtime Rolling updates on WSO2 API Manager*
-
-*3.Autoscaling WSO2 API Manager based on the production load*
-
-
-
-
-![WSO2 API Manager deployment with WSO2 API Manager Analytics support](k8sdemo.png)
 
   ## 1. Deploying API Manager In Kubernetes 
 **Overview**
@@ -25,7 +14,7 @@ please follow the each step in details.
            
 		      A. Creating a Single node file server in gcloud
 	              B. Creating a kubernetes Cluster in gcloud
-	              C. Deploying WSO2 API Manager and Analytics
+	              C. Deploying WSO2 API Manager
 	              D. Deploying NGINX Ingress 
 	   	      E. Access Management Consoles
 
@@ -70,7 +59,7 @@ please follow the each step in details.
 	-   [https://cloud.google.com/resource-manager/docs/creating-managing-projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
 
 
-### ***1.2 Deploying WSO2 API Manager pattern-1***
+### ***1.2 Deploying WSO2 API Manager All in one deployment***
 
 **A.  Creating a Single node file server in gcloud**
     Steps to create a Single node file server

@@ -15,7 +15,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: wso2apim-with-analytics-apim
+  name: wso2apim
 spec:
   replicas: 1
   minReadySeconds: 30
@@ -27,10 +27,10 @@ spec:
   template:
     metadata:
       labels:
-        deployment: wso2apim-with-analytics-apim
+        deployment: wso2apim
     spec:
       containers:
-      - name: wso2apim-with-analytics-apim-worker
+      - name: wso2apim-worker
         image: docker.wso2.com/wso2am:3.1.0
         livenessProbe:
           exec:
@@ -85,37 +85,13 @@ spec:
           containerPort: 7611
           protocol: "TCP"
         volumeMounts:
-        - name: secret-volume-deployment-conf
+        - name: apim-conf
           mountPath: /home/wso2carbon/wso2am-3.1.0/repository/conf/deployment.toml
           subPath: deployment.toml
-        - name: apim-1-conf-confs
-          mountPath: /home/wso2carbon/wso2am-3.1.0/repository/conf/security/secret-conf.properties
-          subPath: secret-conf.properties
-        - name: apim-1-conf-jks
-          mountPath: /home/wso2carbon/wso2am-3.1.0/repository/resources/security/wso2test.jks
-          subPath: wso2test.jks
-        - name: apim-1-conf-serversh
-          mountPath: /home/wso2carbon/wso2am-3.1.0/bin/wso2server.sh
-          subPath: wso2server.sh
-        - name: secret-volume-cipher-pass
-          mountPath: /home/wso2carbon/temp
       serviceAccountName: "wso2svc-account"
       volumes:
-      - name: secret-volume-deployment-conf
-        secret:
-          secretName: deployment-conf
-      - name: apim-1-conf-confs
+      - name: apim-conf
         configMap:
-          name: apim-1-conf-confs
-      - name: apim-1-conf-jks
-        configMap:
-          name: apim-1-conf-jks
-      - name: apim-1-conf-serversh
-        configMap:
-          name: apim-1-conf-serversh
-      - name: secret-volume-cipher-pass
-        secret:
-          secretName: cipher-pass
+          name: apim-conf
       imagePullSecrets:
       - name: wso2creds
-      
