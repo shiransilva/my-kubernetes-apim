@@ -1,0 +1,121 @@
+# Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wso2apim-with-analytics-apim
+spec:
+  replicas: 1
+  minReadySeconds: 30
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        deployment: wso2apim-with-analytics-apim
+    spec:
+      containers:
+      - name: wso2apim-with-analytics-apim-worker
+        image: docker.wso2.com/wso2am:3.1.0
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - nc -z localhost 9443
+          initialDelaySeconds: 100
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - nc -z localhost 9443
+          initialDelaySeconds: 100
+          periodSeconds: 10
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "2000m"
+          limits:
+            memory: "3Gi"
+            cpu: "3000m"
+        ports:
+        -
+          containerPort: 8280
+          protocol: "TCP"
+        -
+          containerPort: 8243
+          protocol: "TCP"
+        -
+          containerPort: 9763
+          protocol: "TCP"
+        -
+          containerPort: 9443
+          protocol: "TCP"
+        -
+          containerPort: 5672
+          protocol: "TCP"
+        -
+          containerPort: 9711
+          protocol: "TCP"
+        -
+          containerPort: 9611
+          protocol: "TCP"
+        -
+          containerPort: 7711
+          protocol: "TCP"
+        -
+          containerPort: 7611
+          protocol: "TCP"
+        volumeMounts:
+        - name: secret-volume-deployment-conf
+          mountPath: /home/wso2carbon/wso2am-3.1.0/repository/conf/deployment.toml
+          subPath: deployment.toml
+        - name: apim-1-conf-confs
+          mountPath: /home/wso2carbon/wso2am-3.1.0/repository/conf/security/secret-conf.properties
+          subPath: secret-conf.properties
+        - name: apim-1-conf-jks
+          mountPath: /home/wso2carbon/wso2am-3.1.0/repository/resources/security/wso2test.jks
+          subPath: wso2test.jks
+        - name: apim-1-conf-serversh
+          mountPath: /home/wso2carbon/wso2am-3.1.0/bin/wso2server.sh
+          subPath: wso2server.sh
+        - name: secret-volume-cipher-pass
+          mountPath: /home/wso2carbon/temp
+      serviceAccountName: "wso2svc-account"
+      volumes:
+      - name: secret-volume-deployment-conf
+        secret:
+          secretName: deployment-conf
+      - name: apim-1-conf-confs
+        configMap:
+          name: apim-1-conf-confs
+      - name: apim-1-conf-jks
+        configMap:
+          name: apim-1-conf-jks
+      - name: apim-1-conf-serversh
+        configMap:
+          name: apim-1-conf-serversh
+      - name: secret-volume-cipher-pass
+        secret:
+          secretName: cipher-pass
+      imagePullSecrets:
+      - name: wso2creds
+      
