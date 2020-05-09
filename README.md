@@ -12,16 +12,10 @@ please follow the each step in details.
 1.2 Deploying WSO2 API Manager in Kubernetes
 
            
-		      A. Creating a Single node file server in gcloud
-	              B. Creating a kubernetes Cluster in gcloud
-	              C. Deploying WSO2 API Manager
-	              D. Deploying NGINX Ingress 
-	   	      E. Access Management Consoles
-
-1.3 Deploying Sample Back end service.
-
-
-
+		      A. Creating a kubernetes Cluster in gcloud
+	              B. Deploying WSO2 API Manager
+	              C. Deploying NGINX Ingress 
+	              D. Access Management Consoles
 
 ### Getting Started
 
@@ -57,47 +51,6 @@ please follow the each step in details.
     
 
 	-   [https://cloud.google.com/resource-manager/docs/creating-managing-projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
-
-
-### ***1.2 Deploying WSO2 API Manager All in one deployment***
-
-**A.  Creating a Single node file server in gcloud**
-    Steps to create a Single node file server
-1.  Login to Google Cloud Console using your Google Account.    
-2.  Visit GCP [Marketplace]( https://console.cloud.google.com/marketplace/details/click-to-deploy-images/singlefs) and search for Single file node server
-3.  Click LAUNCH ON COMPUTE ENGINE and select your specific project  
-4.  Choose the default configurations ,provide a unique name and the corresponding Zone.
-(Name: It must be unique within the project and the zone.
-[Zone and Region](https://cloud.google.com/compute/docs/regions-zones/#available) : choosing according to region)
-
-5.  Click Deploy
-- A pre-configured [Single node file server](https://cloud.google.com/marketplace/docs/single-node-fileserver) to be used as the persistent volume for artifact sharing and persistence.
-
- **Ssh to the Single node file server instance by gcloud UI,**
-
--   create a Linux system user account named wso2carbon with user id 802 and a system group named wso2 with group id   `802`. Add the wso2carbon user to the group wso2.
-    
-	  ```
-	sudo groupadd --system -g 802 wso2  
-	sudo useradd --system -g 802 -u 802 wso2carbon
-	  ```
--   Create unique directories within the Single node file server instance for each Kubernetes Persistent Volume
-    
-	   ```
-	   mkdir /data/<directory_name_apim>
-	   mkdir /data/<directory_name_database>
-	   ```
-  
--   Grant ownership to wso2carbon user and wso2 group, for previously created directories.
-	```
-	sudo chown -R wso2carbon:wso2 <directory_name_apim>
-	 ```
--   Grant read-write-execute permissions to the wso2carbon user, for each of the previously created directories.
-    
-	 ```
-	sudo chmod -R 757 <directory_name_apim>
-	sudo chmod -R 757 <directory_name_database>
-	 ```
   
 **B.  Creating a kubernetes Cluster in gcloud**
     
@@ -119,16 +72,9 @@ Steps to create a kubernetes Cluster
 	
 **C.  Deploying WSO2 API Manager and Analytics**
  
- Clone [wso2/samples-apim](https://github.com/wso2/samples-apim/tree/master/kubernetes-demo) master Branch for the Kubernetes Resources.
+ Clone [my-kubernetes-apim](https://github.com/shiransilva/my-kubernetes-apim.git) master Branch for the Kubernetes Resources.
  
--   Update the Kubernetes Persistent Volume resource with the corresponding Single node file server IP (NFS_SERVER_IP) and exported, NFS server directory path (NFS_LOCATION_PATH) in
 
-	 ```
-	kubernetes-apim-2.6x/pattern-1/extras/rdbms/volumes/persistent-volumes.yaml
-	kubernetes-apim-2.6x/pattern-1/volumes/persistent-volumes.yaml
-	 ```
-	(to get the IP address of Single node file server visit VM Instance under the Compute Engine)
-  
 Next connect to the Kubernetes cluster by Command-line access,follow the steps below to connect to the Kubernetes Cluster.
    
 -  Navigate to Clusters under the Kubernetes Engine in gcloud UI
@@ -150,18 +96,16 @@ Next connect to the Kubernetes cluster by Command-line access,follow the steps b
 	**Note:** this deploy .sh script will ,
 	*create a namespace named  `wso2`  and a service account named  `wso2svc-account`, within the namespace  `wso2`.Then, switch the context to new `wso2` namespace.
 Create a Kubernetes Secret to pull the required Docker images from  [`WSO2 Docker Registry`](https://docker.wso2.com/),
-Create a Kubernetes ConfigMap for passing database script(s) to the deployment.
-Deploy the persistent volume resource and volume claim
-Create a Kubernetes service only within the Kubernetes cluster followed by the MySQL Kubernetes deployment.
+Create a Kubernetes service only within the Kubernetes cluster deployment.
 Create Kubernetes ConfigMaps for passing WSO2 product configurations into the Kubernetes cluster.
-Create Kubernetes Services and Deployments for WSO2 API Manager and Analytics.*
+Create Kubernetes Services and Deployments for WSO2 API Manager.
 -   Check the status of the pod.
 	```
 	kubectl get pods -n wso2
 	```
 **D.  Deploying NGINX Ingress**
    ##### Deploy Kubernetes Ingress resource.
--   Execute nginx-deploy. sh in kubernetes-demo/niginx with Kubernetes cluster admin password.
+-   Execute nginx-deploy. sh in niginx with Kubernetes cluster admin password.
 This will create NGINX Ingress Controller.
     
 	```
@@ -183,160 +127,3 @@ deployment will expose `wso2apim` and `wso2apim-gateway` hosts.
 -   navigate to [https://wso2apim/carbon](https://wso2apim/carbon) , [https://wso2apim/publisher](https://wso2apim/publisher) and [https://wso2apim/store](https://wso2apim/store) from your browser.
 
 	 **Note:**  sign in with **`admin/admin`** credentials.
-    
-
-  
-### ***1.3 Deploying Sample Backend Service***
-
-Sample Kubernetes artifacts are in sample_service/HelloKubernetes/kubernetes/HelloKubernetesService.
-	
- -   Execute service-deploy. sh in kubernetes-demo/sample_service.
-    This will create a Kubernetes service and the deployment of the sample backend service under wso2 namespace.
-    
-		```
-		./service-deploy.sh
-		```
-		
- -   Check the status of the pod.
-		```
-		kubectl get pods -n wso2
-		```
-		
-		
- - Check the services.
-	 ```
-	 kubectl get services -n wso2
-	 ```
-
-**Note:** Use the following command to build a Ballerina executable archive (.balx) of the service in sample_service/HelloKubernetes.
-	```
-	$ ballerina build hellokubernetesService
-	```
-This creates the corresponding Docker image and the Kubernetes artifacts using the Kubernetes annotations that have configured.
-		
-### Deploying a sample API.
-**Creating and publishing An API**
-	
-	
- - update DATA_FILE and IMAGE in  /automation_scripts/publisher/creat_publish_api/publisher_config.txt.
- 
-	 ```
-	HOST_NAME_APIM="wso2apim"
-	PORT=""
-	HOST_NAME_GATWAY="wso2apim-gateway"
-	PUBLISHER_BASE_PATH="api/am/publisher/v0.14"
-	USERNAME="admin"
-	PASSWORD="admin"
-	PUBLISHER_SCOPE="apim:api_view apim:api_create apim:api_publish"
-	DATA_FILE="../create_publish_api/HelloKubernetesAPI/hellokubernetesdata.json"
-	IMAGE="../create_publish_api/HelloKubernetesAPI/kubernetes.png"
-	TIER="Unlimited"
-	```
-
-	(DATA_FILE:path for the json payload file which specifying the details of the API with API definition
-	USERNAME and PASSWORD will be **`admin/admin`** as default.
-	IMAGE:thumbnail image  file path of an API) 
-	
-	Please  refer [RESTful API for WSO2 API Manager - Publisher](https://docs.wso2.com/display/AM260/apidocs/publisher/index.html) for further details.
-
- - Execute create_publish_aip.sh in /automation_scripts/publisher/publisher_create_publish_api/.
- This will create a **HelloKubernetesAPI** in API Manager Publisher  API and Publish it.
-	 ```
-	 ./create_publish_aip.sh
-	```
-	
-### Creating a Sample Application.
-
- - Update API_NAME,APPLICATION_DATA_FILE in
-   /automation_scripts/store/create_application/store_config.txt
-   
-   ```
-    HOST_NAME_APIM="wso2apim"
-	HOST_NAME_GATEWAY="wso2apim-gateway"
-	PORT=""
-	STORE_BASE_PATH="api/am/store/v0.14"
-	STORE_SCOPE="apim:subscribe"
-	USERNAME="admin"
-	PASSWORD="admin"
-	API_NAME="HelloKubernetesAPI"
-	APPLICATION_DATA_FILE="../create_application/HelloKubernetesApp/hellokybernetes_application_data.json"
-	```
-	
- - Execute app_create_sub subscribe .sh in
-   /automation_scripts/publisher/create_publish_api.
-	 This will create a **HelloKubernetesApplication**  Applicaction in API Manager Store and get a subscription.
-	 ```
-	 ./app_create_subscribe.sh
-	 ```
-	 
-	 Please  refer [RESTful API for WSO2 API Manager - Store](https://docs.wso2.com/display/AM260/apidocs/store/index.html) for further details.
-	 
-### Invoking an API
-- Generating an access token.
-
-  Execute token.sh  in  /automation_scripts/client.
-  
-- Invoking an API
-
-  Execute helloclient.sh in  /automation_scripts/client.add the access token we previously generated to $token. 
-  
-	```
-	curl -k -X GET "https://wso2apim-gateway/kuberneteshello/1.0.0" -H "accept: application/json" -H "Authorization: Bearer $token"
-	```
-	
- ## 2.Zero downtime Rolling updates on WSO2 API Manager
- 
--   Change the Docker Image of kubernetes-apim-2.6x/pattern-1/apim/wso2apim-update-deployment.yml
-	 ```  
-		spec:
-		       containers:
-		        - name: wso2apim-with-analytics-apim-worker
-			   image: docker.wso2.com/wso2am:latest
-	 ``` 
-  
-
--   Redeploy the deployment.
-	 ```  
-	kubectl apply -f wso2apim-update-deployment.yaml -n wso2
-	 ```  
--   check the status of all
-
-    ```
-    kubectl get all -n wso2 -o wide
-    ```
-
-
-  ## 3.Autoscaling WSO2 API Manager based on the production load
-  
- Horizontal Pod autoscaler will scales the number of pod replicas based on observed CPU utilization provided metrics.
- [https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
- -   Provide CPU limit and CPU request for the Container by including **resources:limits,resources:requests** in kubernetes-apim-2.6x/pattern-1/apim/wso2apim-deployment.yml
-	 ```
-	 - resources:
-	       requests:
-	           memory: "2Gi"
-	           cpu: "2000m"
-	       limits:
-	           memory: "3Gi"
-	           cpu: "3000m"
-	           
-	  ```
-  -   Create a Horizontal Pod Autoscaler that maintains between 1 and 2 replicas of the Pods controlled by wso2apim-with-analytics-apim deployment.
-HPA will increase and decrease the number of replicas (via the deployment) to maintain an target CPU utilization across all Pods of 5%(you can update the target CPU utilization)
-		```
-		kubectl autoscale deployment wso2apim-with-analytics-apim --cpu-percent=5 --min=1 --max=2 -n wso2
-		```
-		or
-		
-		```
-		Kubectl apply -f wso2apim-hpa.yaml -n wso2
-		```
-
--   check the current status of autoscaler
-	```
-	kubectl get hpa wso2apim-with-analytics-apim -n wso2
-	```
-
-
-
-
