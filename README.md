@@ -52,7 +52,7 @@ please follow the each step in details.
 
 	-   [https://cloud.google.com/resource-manager/docs/creating-managing-projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
   
-**B.  Creating a kubernetes Cluster in gcloud**
+**A.  Creating a kubernetes Cluster in gcloud**
     
 
 Steps to create a kubernetes Cluster
@@ -70,7 +70,7 @@ Steps to create a kubernetes Cluster
 	-   Cluster size: The number of nodes to create in the cluster. For this use case **number of nodes are 3.**
 	-   Machine type: Compute Engine [machine type](https://cloud.google.com/compute/docs/machine-types) to use for the instances. Each machine type is billed differently. The default machine type is n1-standard-1. This should change to **n1-standard-4 15GB memory**.
 	
-**C.  Deploying WSO2 API Manager and Analytics**
+**B.  Deploying WSO2 API Manager and Analytics**
  
  Clone [my-kubernetes-apim](https://github.com/shiransilva/my-kubernetes-apim.git) master Branch for the Kubernetes Resources.
  
@@ -103,7 +103,7 @@ Create Kubernetes Services and Deployments for WSO2 API Manager.
 	```
 	kubectl get pods -n wso2
 	```
-**D.  Deploying NGINX Ingress**
+**C.  Deploying NGINX Ingress**
    ##### Deploy Kubernetes Ingress resource.
 -   Execute nginx-deploy. sh in niginx with Kubernetes cluster admin password.
 This will create NGINX Ingress Controller.
@@ -111,7 +111,7 @@ This will create NGINX Ingress Controller.
 	```
 	./nginx-deploy.sh --cap=<Kubernetes cluster admin password>
 	```
-**E.  Access Management Consoles.**
+**D.  Access Management Consoles.**
     
 deployment will expose `wso2apim` and `wso2apim-gateway` hosts.
 
