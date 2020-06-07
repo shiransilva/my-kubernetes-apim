@@ -60,15 +60,30 @@ ${KUBECTL} config set-context $(${KUBECTL} config current-context) --namespace=w
 
 # create a Kubernetes Secret for passing WSO2 Private Docker Registry credentials
 ${KUBECTL} create secret docker-registry wso2creds --docker-server=docker.wso2.com --docker-username=${WSO2_SUBSCRIPTION_USERNAME} --docker-password=${WSO2_SUBSCRIPTION_PASSWORD} --docker-email=${WSO2_SUBSCRIPTION_USERNAME}
-
+${KUBECTL} create secret generic cipher-pass --from-literal='password-tmp=wso2carbon'
 # create Kubernetes Role and Role Binding necessary for the Kubernetes API requests made from Kubernetes membership scheme
 ${KUBECTL} create --username=admin --password=${ADMIN_PASSWORD} -f ../rbac/rbac.yaml
 
-#echoBold 'Creating ConfigMaps...'
+echoBold 'Creating ConfigMaps...'
 ${KUBECTL} create configmap apim-conf --from-file=../confs/apim/
+${KUBECTL} create configmap apim-conf-bin --from-file=../confs/apim/bin/
+
+#${KUBECTL} create configmap apim-drivers --from-file=../confs/drivers/
+echoBold 'Executing Provisioner helm chart...'
+helm install nfsp ../apim/nfs-server-provisioner-1.0.0.tgz
+
+echoBold 'Deploying MYSQL...'
+${KUBECTL} apply -f ../mysql/wso2apim-mysql-conf.yaml
+${KUBECTL} apply -f ../mysql/wso2apim-mysql-deployment.yaml
+${KUBECTL} create -f ../mysql/wso2apim-mysql-service.yaml
+
+sleep 90s
 
 echoBold 'Deploying WSO2 API Manager...'
-${KUBECTL} create -f ../apim/wso2apim-deployment.yaml
+${KUBECTL} apply -f ../apim/wso2apim-entrypoint.yaml
+${KUBECTL} apply -f ../apim/wso2apim-pvc.yaml
+${KUBECTL} apply -f ../apim/wso2apim-synapse-pvc.yaml
+${KUBECTL} create -f ../apim/wso2apim-deployment.yaml --validate=false
 ${KUBECTL} create -f ../apim/wso2apim-service.yaml
 
 sleep 10s

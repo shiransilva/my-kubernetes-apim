@@ -86,12 +86,39 @@ spec:
           protocol: "TCP"
         volumeMounts:
         - name: apim-conf
-          mountPath: /home/wso2carbon/wso2am-3.1.0/repository/conf/deployment.toml
-          subPath: deployment.toml
+          mountPath: /home/wso2carbon/temp2
+        - name: apim-conf-bin
+          mountPath: /home/wso2carbon/wso2am-3.1.0/bin/wso2server.sh
+          subPath: wso2server.sh
+        - name: wso2am-pattern-2-conf-entrypoint
+          mountPath: /home/wso2carbon/docker-entrypoint.sh
+          subPath: docker-entrypoint.sh
+        - name: secret-volume-cipher-pass
+          mountPath: /home/wso2carbon/temp
+        - name: apim-pvc
+          mountPath: /home/wso2carbon/wso2am-3.1.0/repository/logs
+        - name: apim-pvc-synapse
+          mountPath: /home/wso2carbon/wso2am-3.1.0/repository/deployment/server/synapse-configs
       serviceAccountName: "wso2svc-account"
       volumes:
       - name: apim-conf
         configMap:
           name: apim-conf
+      - name: apim-conf-bin
+        configMap:
+          name: apim-conf-bin
+      - name: wso2am-pattern-2-conf-entrypoint
+        configMap:
+          name: wso2am-pattern-2-conf-entrypoint
+          defaultMode: 0407
+      - name: apim-pvc
+        persistentVolumeClaim:
+          claimName: wso2apim-pvc
+      - name: apim-pvc-synapse
+        persistentVolumeClaim:
+          claimName: wso2apim-pvc-synapse
+      - name: secret-volume-cipher-pass
+        secret:
+          secretName: cipher-pass
       imagePullSecrets:
       - name: wso2creds

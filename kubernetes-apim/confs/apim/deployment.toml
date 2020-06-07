@@ -19,16 +19,18 @@ create_admin_account = true
 type = "database_unique_id"
 
 [database.apim_db]
-type = "h2"
-url = "jdbc:h2:./repository/database/WSO2AM_DB;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE"
+type = "mysql"
+url = "jdbc:mysql://wso2apim-rdbms-service-mysql:3306/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
 username = "wso2carbon"
 password = "wso2carbon"
+driver = "com.mysql.cj.jdbc.Driver"
 
 [database.shared_db]
-type = "h2"
-url = "jdbc:h2:./repository/database/WSO2SHARED_DB;DB_CLOSE_ON_EXIT=FALSE"
+type = "mysql"
+url = "jdbc:mysql://wso2apim-rdbms-service-mysql:3306/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
 username = "wso2carbon"
 password = "wso2carbon"
+driver = "com.mysql.cj.jdbc.Driver"
 
 [keystore.tls]
 file_name =  "wso2carbon.jks"
@@ -247,3 +249,9 @@ sp_name_regex = "^[\\sa-zA-Z0-9._-]*$"
 
 [database.local]
 url = "jdbc:h2:./repository/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE"
+
+[secrets]
+admin_password = "[admin]"
+keystore_password = "[wso2carbon]"
+key_password = "[wso2carbon]"
+truststrore_password = "[wso2carbon]"
