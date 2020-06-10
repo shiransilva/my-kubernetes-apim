@@ -84,6 +84,10 @@ spec:
         -
           containerPort: 7611
           protocol: "TCP"
+        -
+          containerPort: 8099
+        -
+          containerPort: 9099
         volumeMounts:
         - name: apim-conf
           mountPath: /home/wso2carbon/temp2
@@ -104,6 +108,9 @@ spec:
       - name: apim-conf
         configMap:
           name: apim-conf
+      - name: apim-conf-something
+        configMap:
+          name: apim-conf-tomcat
       - name: apim-conf-bin
         configMap:
           name: apim-conf-bin

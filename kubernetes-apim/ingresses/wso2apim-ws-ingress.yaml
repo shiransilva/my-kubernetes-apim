@@ -12,37 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: v1
-kind: Service
+apiVersion: extensions/v1beta1
+kind: Ingress
 metadata:
-  name: wso2apim-service
+  name: wso2apim-wss-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 spec:
-  # label keys and values that must match in order to receive traffic for this service
-  selector:
-    deployment: wso2apim
-  ports:
-    # ports that this service should serve on
-    -
-      name: pass-through-http
-      protocol: TCP
-      port: 8280
-    -
-      name: pass-through-https
-      protocol: TCP
-      port: 8243
-    -
-      name: servlet-http
-      protocol: TCP
-      port: 9763
-    -
-      name: servlet-https
-      protocol: TCP
-      port: 9443
-    -
-      name: ws
-      protocol: TCP
-      port: 9099
-    -
-      name: wss
-      protocol: TCP
-      port: 8099
+  tls:
+  - hosts:
+    - wso2apim-wss
+  rules:
+  - host: wso2apim-wss
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: wso2apim-service
+          servicePort: 8099
+

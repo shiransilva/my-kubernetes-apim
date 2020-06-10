@@ -17,9 +17,9 @@ function usage () {
     echoBold "--cap | --cluster-admin-password\tKubernetes cluster admin password\n\n"
 }
 
-WSO2_SUBSCRIPTION_USERNAME=''
-WSO2_SUBSCRIPTION_PASSWORD=''
-ADMIN_PASSWORD=''
+WSO2_SUBSCRIPTION_USERNAME='shiranm@wso2.com'
+WSO2_SUBSCRIPTION_PASSWORD='ShiranSilva932391457v#'
+ADMIN_PASSWORD='BYJC0fsQPEp4O1Pr'
 
 # capture named arguments
 while [ "$1" != "" ]; do
@@ -67,6 +67,8 @@ ${KUBECTL} create --username=admin --password=${ADMIN_PASSWORD} -f ../rbac/rbac.
 echoBold 'Creating ConfigMaps...'
 ${KUBECTL} create configmap apim-conf --from-file=../confs/apim/
 ${KUBECTL} create configmap apim-conf-bin --from-file=../confs/apim/bin/
+${KUBECTL} create configmap apim-conf-tomcat --from-file=../confs/apim/tomcat
+
 
 #${KUBECTL} create configmap apim-drivers --from-file=../confs/drivers/
 echoBold 'Executing Provisioner helm chart...'
@@ -91,5 +93,6 @@ sleep 10s
 echoBold 'Deploying Ingresses...'
 ${KUBECTL} create -f ../ingresses/wso2apim-ingress.yaml
 ${KUBECTL} create -f ../ingresses/wso2apim-gateway-ingress.yaml
+${KUBECTL} create -f ../ingresses/wso2apim-ws-ingress.yaml
 
 echoBold 'Finished'
