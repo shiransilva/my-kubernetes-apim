@@ -17,9 +17,9 @@ function usage () {
     echoBold "--cap | --cluster-admin-password\tKubernetes cluster admin password\n\n"
 }
 
-WSO2_SUBSCRIPTION_USERNAME='shiranm@wso2.com'
-WSO2_SUBSCRIPTION_PASSWORD='ShiranSilva932391457v#'
-ADMIN_PASSWORD='BYJC0fsQPEp4O1Pr'
+WSO2_SUBSCRIPTION_USERNAME=''
+WSO2_SUBSCRIPTION_PASSWORD=''
+ADMIN_PASSWORD=''
 
 # capture named arguments
 while [ "$1" != "" ]; do
